@@ -43,4 +43,49 @@ class UserController extends Controller
 
         return new Response('check'.$user->getName());
     }
+
+    /**
+     * @Route("/user/edit/{id}", name="user_edit")
+     */
+    public function updateAction($id)
+    {
+        $entityManage = $this->getDoctrine()->getManager();
+
+        $user = $entityManage->getRepository(User::class)->find($id);
+
+        if (!$user) {
+            throw $this->createNotFoundException(
+                'No Use Found for id'.$id
+            );
+        }
+
+        $user->setName('逍遥子');
+        $entityManage->flush();
+
+        return $this->redirectToRoute('user_show', [
+            'id' => $user->getId()
+        ]);
+    }
+
+    /**
+     * @Route("/user/delete/{id}", name="user_delete")
+     */
+    public function deleteAction($id)
+    {
+        $entityManage = $this->getDoctrine()->getManager();
+        $user = $entityManage->getRepository(User::class)->find($id);
+
+        if (!$user) {
+            throw $this->createNotFoundException(
+                'No User Fount for id'.$id
+            );
+        }
+
+        $entityManage->remove($user);
+        $entityManage->flush();
+
+        return $this->redirectToRoute('user_show', [
+            'id' => $id
+        ]);
+    }
 }
